@@ -8,10 +8,12 @@ import { ReportsModule } from './modules/reports/reports.module';
 import { ExpensesModule } from './modules/expenses/expenses.module';
 import { TelegramModule } from './modules/telegram/telegram.module';
 import { UsersModule } from './modules/users/users.module';
+import { ConversationModule } from './modules/conversation/conversation.module';
 // import { TelegramModule } from './telegram/telegram.module';
 // import { UserModule } from './user/user.module';
 // import { StateModule } from './telegram/state/state.module';
 // import { RegistrationModule } from './telegram/registration/registration.module';
+import { RedisModule } from './redis/redis.module';
 
 @Module({
     imports: [
@@ -44,7 +46,9 @@ import { UsersModule } from './modules/users/users.module';
     ReportsModule ,
     ExpensesModule ,
     TelegramModule ,
-    UsersModule
+    UsersModule ,
+    ConversationModule,
+    RedisModule
     
 
   ],

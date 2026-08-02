@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { TelegrafModule } from 'nestjs-telegraf/dist/telegraf.module';
 import { TelegramUpdate } from './telegram.update';
+import { UsersModule } from '../users/users.module';
 
 @Module({
     imports: [
@@ -11,6 +12,7 @@ import { TelegramUpdate } from './telegram.update';
             token: config.get<string>('BOT_TOKEN')!,
         }),
         }),
+        UsersModule
     ],
     providers: [TelegramUpdate],
 })
