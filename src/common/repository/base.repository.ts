@@ -238,14 +238,21 @@ async findOne({
         return await this.model.updateMany(filter , {...update , $inc:{_v: 1}} , options )
     }
 
+ 
     async deleteOne({
-        filter ={},
-    } :{
-        filter: QueryFilter<TRawDocument>,
-    } 
-    ):Promise<DeleteResult>{
-        return await this.model.deleteOne(filter)
-    }
+            filter ={},
+            force = false,
+        }: {
+            filter:QueryFilter<TRawDocument>;
+            force?: boolean;
+        }) {
+
+            return this.model.deleteOne({
+                ...filter,
+                force,
+            });
+
+        }
 
     async deleteMany({
         filter={} ,

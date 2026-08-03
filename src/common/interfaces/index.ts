@@ -1,1 +1,5 @@
 export * from './user.interface'
+export * from './conversation-handler.interface'
+export * from './conversation-session.interface'
+export * from './expense.interface'
+export * from './category.interface'

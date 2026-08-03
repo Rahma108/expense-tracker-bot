@@ -1,9 +1,32 @@
-import { ConversationState } from "../enums/conversation-state.enum";
+import { ConversationState } from "../enums";
 
 export interface IConversationSession {
-
+    
     state: ConversationState;
 
-    data: Record<string, any>;
+    createdAt?: Date;
 
+    updatedAt?: Date;
+
+
+    firstName?: string;
+
+    lastName?: string;
+
+     // Expense selected for Update/Delete
+    expenseId?: string;
+
+    // Category
+    categoryName?: string;
+
+    
+    expenseDraft?: {
+
+        amount?: number;
+
+        category?: string;
+
+        note?: string;
+
+    };
 }

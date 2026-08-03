@@ -4,9 +4,9 @@ import {
   Schema,
   SchemaFactory,
 } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
-import { IUser } from '../common/interfaces/user.interface';
-export type HUserDocument = HydratedDocument<IUser>;
+import { HydratedDocument, Types } from 'mongoose';
+import { ICategory } from '../common/interfaces';
+export type HCategoryDocument = HydratedDocument<ICategory>;
 @Schema({
   timestamps: true,
   toJSON: { virtuals: true },
@@ -14,29 +14,31 @@ export type HUserDocument = HydratedDocument<IUser>;
   strict: true,
   strictQuery: true,
 })
-export class User implements IUser {
-    @Prop({
-    type: Number,
-    required: true,
-    unique: true,
-    index: true,
-  })
-  telegramId!: number;
+export class Category implements ICategory {
 
-  @Prop({type: String, required: true })
-  firstName!: string;
-
-  @Prop({
-      type: String,
-      required: true,
+   @Prop({
+        type :String ,
+        required:true,
+        trim:true,
     })
-    lastName!: string;
+    name!:string;
 
-  @Prop({type: String, default: null })
-  username?: string;
 
-  @Prop({ type: String, default: 'EGP' })
-  currency?: string;
+
+    @Prop({
+        type:Types.ObjectId,
+        ref:'User',
+        required:true,
+    })
+    userId!:Types.ObjectId;
+
+
+
+    @Prop({
+       type :Boolean ,
+        default:false,
+    })
+    isDefault?:boolean;
 
   @Prop({
     type: Date,
@@ -51,27 +53,35 @@ export class User implements IUser {
   restoredAt?: Date;
 }
 
-export const userMongooseSchema = SchemaFactory.createForClass(User);
-export const UserModel = MongooseModule.forFeatureAsync([
+export const CategoryMongooseSchema = SchemaFactory.createForClass(Category);
+export const CategoryModel = MongooseModule.forFeatureAsync([
   {
-    name: User.name,
+    name: Category.name,
 
     useFactory: () => {
-     userMongooseSchema.pre(['find', 'findOne'], function () {
-    if (this.getQuery().paranoid === false) {
-      return;
-    }
+      CategoryMongooseSchema.pre(
+    ['find','findOne'],
+    function(){
 
-    this.setQuery({
-      ...this.getQuery(),
-      deletedAt: null,
-    });
-  });
+        if(this.getQuery().paranoid === false){
+            return;
+        }
 
-  userMongooseSchema.pre(
+
+        this.setQuery({
+
+            ...this.getQuery(),
+
+            deletedAt:null,
+
+        });
+
+});
+
+  CategoryMongooseSchema.pre(
     ['updateOne', 'findOneAndUpdate'],
     function () {
-      const update = this.getUpdate() as HydratedDocument<IUser>;
+      const update = this.getUpdate() as HydratedDocument<ICategory>;
 
       if (update.deletedAt) {
         this.setQuery({
@@ -95,7 +105,7 @@ export const UserModel = MongooseModule.forFeatureAsync([
     },
   );
 
-  userMongooseSchema.pre(
+  CategoryMongooseSchema.pre(
     ['deleteOne', 'findOneAndDelete'],
     function () {
       if (this.getQuery().force === true) {
@@ -110,7 +120,7 @@ export const UserModel = MongooseModule.forFeatureAsync([
   );
 
 
-    return userMongooseSchema;
+    return CategoryMongooseSchema;
     },
   },
 ]);
