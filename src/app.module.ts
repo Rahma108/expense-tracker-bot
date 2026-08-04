@@ -10,6 +10,7 @@ import { TelegramModule } from './modules/telegram/telegram.module';
 import { UsersModule } from './modules/users/users.module';
 import { ConversationModule } from './modules/conversation/conversation.module';
 import { RedisModule } from './redis/redis.module';
+import { ExportModule } from './modules/export/export.module';
 
 @Module({
     imports: [
@@ -44,7 +45,8 @@ import { RedisModule } from './redis/redis.module';
     TelegramModule ,
     UsersModule ,
     ConversationModule,
-    RedisModule
+    RedisModule,
+    ExportModule,
     
 
   ],

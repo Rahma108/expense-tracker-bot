@@ -39,6 +39,12 @@ export class User implements IUser {
   currency?: string;
 
   @Prop({
+    type : Number ,
+    default: 0,
+    })
+    monthlyBudget?: number;
+
+  @Prop({
     type: Date,
     default: null,
   })

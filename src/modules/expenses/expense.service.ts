@@ -20,6 +20,14 @@ constructor(
 
 
 
+        async findAll(userId: Types.ObjectId) {
+            return this.expenseRepository.find({
+                filter: {
+                    userId,
+                },
+            });
+        }
+
         async createExpense(data:{
             userId: Types.ObjectId;
             amount:number;
@@ -165,6 +173,356 @@ constructor(
     });
 
     await ctx.reply(msg);
+}
+
+        async categoryHasExpenses(
+            userId: Types.ObjectId,
+            category: string,
+        ) {
+            return this.expenseRepository.findOne({
+                filter: {
+                    userId,
+                    category,
+                },
+            });
+        }
+
+
+
+        // Aggregation
+        async getTotalExpenses(userId: Types.ObjectId) {
+
+         const result = await this.expenseRepository.aggregate([
+        {
+            $match: {
+                userId,
+                deletedAt: null,
+            },
+        },
+        {
+            $group: {
+                _id: null,
+                total: {
+                    $sum: "$amount",
+                },
+            },
+        },
+    ]);
+
+    return result[0]?.total ?? 0;
+}
+
+
+    async getTotalTransactions(userId: Types.ObjectId) {
+
+    return this.expenseRepository.countDocuments({
+        filter: {
+            userId,
+            deletedAt: null,
+        },
+    });
+
+}
+
+    async getHighestExpense(userId: Types.ObjectId) {
+
+    const result =
+        await this.expenseRepository.findOne({
+            filter: {
+                userId,
+                deletedAt: null,
+            },
+            options: {
+                sort: {
+                    amount: -1,
+                },
+            },
+        });
+
+    return result;
+}
+
+async getLowestExpense(userId: Types.ObjectId) {
+
+    const result =
+        await this.expenseRepository.findOne({
+            filter: {
+                userId,
+                deletedAt: null,
+            },
+            options: {
+                sort: {
+                    amount: 1,
+                },
+            },
+        });
+
+    return result;
+}
+    async getExpensesByCategory(userId: Types.ObjectId) {
+
+    return this.expenseRepository.aggregate([
+        {
+            $match: {
+                userId,
+                deletedAt: null,
+            },
+        },
+        {
+            $group: {
+                _id: "$category",
+
+                total: {
+                    $sum: "$amount",
+                },
+
+                count: {
+                    $sum: 1,
+                },
+            },
+        },
+        {
+            $sort: {
+                total: -1,
+            },
+        },
+    ]);
+
+}
+
+    async getAverageExpense(userId: Types.ObjectId) {
+
+    const result = await this.expenseRepository.aggregate([
+    {
+        $match: {
+            userId,
+            deletedAt: null,
+        },
+    },
+    {
+        $group: {
+            _id: null,
+            average: {
+                $avg: "$amount",
+            },
+        },
+    },
+]);
+
+console.log(result);
+
+return result[0]?.average ?? 0;
+
+}
+
+    async getTopCategory(userId: Types.ObjectId) {
+
+    const result = await this.expenseRepository.aggregate([
+        {
+            $match: {
+                userId,
+                deletedAt: null,
+            },
+        },
+        {
+            $group: {
+                _id: "$category",
+                total: {
+                    $sum: "$amount",
+                },
+            },
+        },
+        {
+            $sort: {
+                total: -1,
+            },
+        },
+        {
+            $limit: 1,
+        },
+    ]);
+
+    return result[0] ?? null;
+}
+
+    //stats
+
+    async getTodayExpenses(userId: Types.ObjectId) {
+
+    const start = new Date();
+    start.setHours(0,0,0,0);
+
+    return this.expenseRepository.aggregate([
+        {
+            $match:{
+                userId,
+                deletedAt:null,
+                date:{
+                    $gte:start
+                }
+            }
+        },
+        {
+            $group:{
+                _id:null,
+                total:{
+                    $sum:"$amount"
+                }
+            }
+        }
+    ]).then(result => result[0]?.total ?? 0);
+
+}
+
+
+    async getWeekExpenses(userId: Types.ObjectId) {
+
+    const date = new Date();
+
+    date.setDate(
+        date.getDate() - date.getDay()
+    );
+
+    date.setHours(0,0,0,0);
+
+
+    return this.expenseRepository.aggregate([
+        {
+            $match:{
+                userId,
+                deletedAt:null,
+                date:{
+                    $gte:date
+                }
+            }
+        },
+        {
+            $group:{
+                _id:null,
+                total:{
+                    $sum:"$amount"
+                }
+            }
+        }
+    ]).then(result => result[0]?.total ?? 0);
+
+}
+
+    async getMonthExpenses(userId: Types.ObjectId){
+
+    const date = new Date(
+        new Date().getFullYear(),
+        new Date().getMonth(),
+        1
+    );
+
+
+    return this.expenseRepository.aggregate([
+        {
+            $match:{
+                userId,
+                deletedAt:null,
+                date:{
+                    $gte:date
+                }
+            }
+        },
+        {
+            $group:{
+                _id:null,
+                total:{
+                    $sum:"$amount"
+                }
+            }
+        }
+    ]).then(result => result[0]?.total ?? 0);
+
+}
+
+
+    async getCurrentMonthTotal(
+    userId: Types.ObjectId,
+) {
+
+    const start = new Date(
+        new Date().getFullYear(),
+        new Date().getMonth(),
+        1,
+    );
+
+    const result =
+        await this.expenseRepository.aggregate([
+            {
+                $match: {
+                    userId,
+                    deletedAt: null,
+                    date: {
+                        $gte: start,
+                    },
+                },
+            },
+            {
+                $group: {
+                    _id: null,
+                    total: {
+                        $sum: "$amount",
+                    },
+                },
+            },
+        ]);
+
+    return result[0]?.total ?? 0;
+
+}
+
+// budget 
+
+        public buildProgressBar(percent: number): string {
+
+            const totalBars = 10;
+
+            const filledBars = Math.min(
+                totalBars,
+                Math.floor(percent / 10),
+            );
+
+            return (
+                "█".repeat(filledBars) +
+                
+                "░".repeat(totalBars - filledBars)
+            );
+        }
+
+        // Export 
+
+        async getCurrentMonthExpenses(
+                userId: Types.ObjectId,
+            ) {
+
+                const start =
+                    new Date(
+                        new Date().getFullYear(),
+                        new Date().getMonth(),
+                        1,
+                    );
+
+
+                return this.expenseRepository.find({
+
+                    filter: {
+
+                    userId,
+
+                    deletedAt: null,
+
+                    date: {
+                        $gte: start,
+                    },
+
+                },
+
+            });
+
 }
 
 }

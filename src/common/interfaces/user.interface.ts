@@ -5,6 +5,9 @@ export interface IUser {
     username?: string;
     currency?: string;
 
+    monthlyBudget?: number;
+
+
     deletedAt?:Date ;
     restoredAt?:Date;
 }

@@ -6,6 +6,7 @@ import { IConversationHandler } from '../../../common/interfaces';
 import { ConversationService } from '../conversation.service';
 import { UserRepository } from '../../../common/repository/user.repository';
 import { UserMessages } from '../../../common/messages';
+import { CategoriesService } from '../../categories/categories.service';
 
 
 @Injectable()
@@ -19,9 +20,9 @@ ConversationState.REGISTER_WAITING_LAST_NAME;
 
 
 constructor(
-    private readonly conversationService: ConversationService,
-
+     private readonly conversationService: ConversationService,
     private readonly userRepository: UserRepository,
+    private readonly categoriesService: CategoriesService,
 ){}
 
 
@@ -74,19 +75,18 @@ if(!session || !session.firstName){
 
 
 
+const user =
 await this.userRepository.createOne({
 
     data:{
 
         telegramId,
 
-        firstName:
-        session.firstName,
+        firstName: session.firstName,
 
         lastName,
 
-        username:
-        ctx.from?.username,
+        username: ctx.from?.username,
 
         currency:'EGP'
 
@@ -94,6 +94,9 @@ await this.userRepository.createOne({
 
 });
 
+await this.categoriesService.createDefaultCategories(
+    user._id,
+);
 
 
 await this.conversationService.clearSession(

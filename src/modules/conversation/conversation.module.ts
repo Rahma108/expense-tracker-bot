@@ -10,7 +10,7 @@ import { ExpenseAmountHandler } from './handlers/add-expense-amount.handler';
 import { ExpenseCategoryHandler } from './handlers/add-expense-category.handler';
 import { ExpenseNoteHandler } from './handlers/add-expense-note.handler';
 import { ExpensesModule } from '../expenses/expenses.module';
-import { DeleteExpenseIdHandler, HardDeleteExpenseIdHandler, RestoreExpenseIdHandler, UpdateExpenseAmountHandler, UpdateExpenseIdHandler, UpdateExpenseNoteHandler } from './handlers';
+import { DeleteCategoryHandler, DeleteExpenseIdHandler, HardDeleteCategoryHandler, HardDeleteExpenseIdHandler, RestoreCategoryHandler, RestoreExpenseIdHandler, UpdateCategoryIdHandler, UpdateCategoryNameHandler, UpdateExpenseAmountHandler, UpdateExpenseIdHandler, UpdateExpenseNoteHandler } from './handlers';
 import { UpdateExpenseCategoryHandler } from './handlers/update-expense-category.handler';
 import { AddCategoryHandler } from './handlers/add-category.handler';
 import { CategoriesModule } from '../categories/categories.module';
@@ -46,6 +46,11 @@ providers:[
     RestoreExpenseIdHandler,
     HardDeleteExpenseIdHandler,
     AddCategoryHandler,
+    UpdateCategoryIdHandler,
+    UpdateCategoryNameHandler,
+    DeleteCategoryHandler,
+    RestoreCategoryHandler,
+    HardDeleteCategoryHandler,
 
 
     {
@@ -64,8 +69,14 @@ providers:[
             deleteExpenseIdHandler:DeleteExpenseIdHandler,
             restoreExpenseIdHandler:RestoreExpenseIdHandler,
             hardDeleteExpenseIdHandler:HardDeleteExpenseIdHandler,
-            addCategoryHandler:AddCategoryHandler
+            addCategoryHandler:AddCategoryHandler ,
+            updateCategoryIdHandler:UpdateCategoryIdHandler,
+            updateCategoryNameHandler:UpdateCategoryNameHandler,
+            deleteCategoryHandler:DeleteCategoryHandler,
+            restoreCategoryHandler:RestoreCategoryHandler,
+            hardDeleteCategoryHandler: HardDeleteCategoryHandler
         )=>[
+
             firstNameHandler,
             lastNameHandler,
             expenseAmountHandler,
@@ -78,7 +89,12 @@ providers:[
             deleteExpenseIdHandler ,
             restoreExpenseIdHandler,
             hardDeleteExpenseIdHandler,
-            addCategoryHandler
+            addCategoryHandler ,
+            updateCategoryIdHandler,
+            updateCategoryNameHandler,
+            deleteCategoryHandler,
+            restoreCategoryHandler,
+            hardDeleteCategoryHandler
         ],
 
         inject:[
@@ -94,7 +110,12 @@ providers:[
             DeleteExpenseIdHandler,
             RestoreExpenseIdHandler,
             HardDeleteExpenseIdHandler,
-            AddCategoryHandler
+            AddCategoryHandler,
+            UpdateCategoryIdHandler,
+            UpdateCategoryNameHandler,
+            DeleteCategoryHandler,
+            RestoreCategoryHandler,
+            HardDeleteCategoryHandler
         ],
 
     },

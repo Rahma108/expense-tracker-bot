@@ -15,6 +15,7 @@ import {
   UpdateWithAggregationPipeline,
   UpdateWriteOpResult,
   DeleteResult,
+  PipelineStage,
 } from 'mongoose';
 
 @Injectable()
@@ -62,11 +63,37 @@ export abstract class BaseRepository<TRawDocument> {
         };
         }
 
-        async countDocuments(
-        filter?: QueryFilter<TRawDocument>,
-        ): Promise<number> {
-        return this.model.countDocuments(filter);
+     countDocuments({
+            filter = {},
+        }: {
+            filter?: QueryFilter<TRawDocument>;
+        }): Promise<number> {
+
+            return this.model.countDocuments(filter).exec();
+
         }
+
+
+
+      async aggregate<TResult = any>(
+                pipeline: PipelineStage[],
+            ): Promise<TResult[]> {
+
+                return this.model.aggregate(pipeline).exec();
+
+}
+
+     async findOneSorted({
+            filter,
+            sort,
+        }: {
+            filter: QueryFilter<TRawDocument>;
+            sort: Record<string, 1 | -1>;
+        }) {
+            return this.model.findOne(filter).sort(sort);
+        }
+
+
     // Overloading ...............
             create(
         { data }: { data: AnyKeys<TRawDocument> }

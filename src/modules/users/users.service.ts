@@ -197,4 +197,91 @@ export class UsersService {
 
 }
 
+// Budget 
+        async budget(ctx: Context) {
+
+            const telegramId = ctx.from!.id;
+
+            const user =
+                await this.usersRepository.findByTelegramId(
+                    telegramId,
+                );
+
+            if (!user) {
+                await ctx.reply("❌ User not found.");
+                return;
+            }
+
+            if (!user.monthlyBudget) {
+                await ctx.reply(
+                    "💰 No monthly budget set.\n\nUse:\n/budget 5000",
+                );
+                return;
+            }
+
+            await ctx.reply(
+                `💰 Monthly Budget: ${user.monthlyBudget} ${user.currency}`,
+            );
+
+        }
+
+            async setBudget(ctx: Context) {
+
+            const telegramId = ctx.from!.id;
+
+            const user =
+                await this.usersRepository.findByTelegramId(
+                    telegramId,
+                );
+
+            if (!user) {
+                await ctx.reply("❌ User not found.");
+                return;
+            }
+
+            if (
+                !ctx.message ||
+                !("text" in ctx.message)
+            ) {
+                return;
+            }
+
+            const parts =
+                ctx.message.text.split(" ");
+
+            if (parts.length !== 2) {
+
+                await ctx.reply(
+                    "Usage:\n/budget 5000",
+                );
+
+                return;
+            }
+
+            const amount =
+                Number(parts[1]);
+
+            if (
+                Number.isNaN(amount) ||
+                amount <= 0
+            ) {
+
+                await ctx.reply(
+                    "❌ Invalid amount.",
+                );
+
+                return;
+            }
+
+            await this.usersRepository.updateBudget(
+                user._id,
+                amount,
+            );
+
+            await ctx.reply(
+                `✅ Monthly budget set to ${amount} ${user.currency}`,
+            );
+
+        }
+
 }

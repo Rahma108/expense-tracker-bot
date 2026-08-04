@@ -1,6 +1,6 @@
 import { InjectModel } from '@nestjs/mongoose';
 import { BaseRepository } from './base.repository';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { IUser } from '../interfaces';
 import { HUserDocument, User } from '../../DB/user.model';
@@ -22,5 +22,25 @@ export class UserRepository extends BaseRepository<IUser> {
   return this.createOne({
     data,
   });
+}
+
+
+    async updateBudget(
+        userId: Types.ObjectId,
+        monthlyBudget: number,
+    ) {
+
+        return this.updateOne({
+
+            filter: {
+            _id: userId,
+        },
+
+        update: {
+            monthlyBudget,
+        },
+
+    });
+
 }
 }

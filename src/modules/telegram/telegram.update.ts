@@ -5,9 +5,11 @@ import { Injectable } from '@nestjs/common';
 import { ConversationService } from '../conversation/conversation.service';
 import { ConversationRouterService } from '../conversation/conversation-router.service';
 import { ConversationState } from '../../common/enums';
-import { EXPENSE_MESSAGES } from '../../common/messages';
+import { CATEGORY_MESSAGES, EXPENSE_MESSAGES } from '../../common/messages';
 import { ExpensesService } from '../expenses/expense.service';
 import { CategoriesService } from '../categories/categories.service';
+import { ReportsService } from '../reports/reports.service';
+import { ExportService } from '../export/export.service';
 
 // Events in telegram ............
 
@@ -19,7 +21,9 @@ export class TelegramUpdate {
             private readonly conversationRouter: ConversationRouterService,
             private readonly conversationService : ConversationService,
             private readonly expensesService : ExpensesService ,
-            private readonly categoriesService : CategoriesService
+            private readonly categoriesService : CategoriesService,
+            private readonly reportsService: ReportsService,
+            private readonly exportService: ExportService,
 
         ) {}
             @Start()
@@ -46,18 +50,100 @@ export class TelegramUpdate {
             return this.usersService.cancel(ctx);
             }
 
-
+                // Category ..
             @Command('addCategory')
             async addCategory(@Ctx() ctx: Context) {
             console.log('ADD CATEGORY COMMAND');
             return this.categoriesService.addCategory(ctx);
             }
 
-            // Expense 
 
-            @Command('add')
-            async add(@Ctx() ctx: Context){
-                console.log("ADD COMMAND");
+            @Command("updateCategory")
+                async updateCategory(@Ctx() ctx: Context) {
+
+                    const telegramId = ctx.from!.id;
+
+                    await this.conversationService.saveSession(
+                        telegramId,
+                        {
+                            state: ConversationState.UPDATE_CATEGORY_WAITING_ID,
+                        },
+                    );
+
+                    await ctx.reply(
+                        CATEGORY_MESSAGES.ASK_UPDATE_ID,
+                    );
+                }
+
+            @Command('deleteCategory')
+            async deleteCategory(@Ctx() ctx: Context) {
+            const telegramId = ctx.from!.id;
+
+            await this.conversationService.saveSession(telegramId, {
+                state: ConversationState.DELETE_CATEGORY_WAITING_ID,
+            });
+
+            await ctx.reply(CATEGORY_MESSAGES.ASK_DELETE_ID);
+            }
+
+
+            @Command("restoreCategory")
+            async restoreCategory(
+                @Ctx() ctx: Context,
+            ) {
+
+                const telegramId =
+                    ctx.from!.id;
+
+                await this.conversationService.saveSession(
+                    telegramId,
+                    {
+                        state:
+                            ConversationState.RESTORE_CATEGORY_WAITING_ID,
+                    },
+                );
+
+                await ctx.reply(
+                    CATEGORY_MESSAGES.ASK_CATEGORY_ID_TO_RESTORE,
+                );
+
+            }
+
+            @Command("categoryTrash")
+                async categoryTrash(
+                    @Ctx() ctx: Context,
+                ) {
+
+                    return this.categoriesService.trash(ctx);
+
+                }
+
+                @Command("hardDeleteCategory")
+                async hardDeleteCategory(
+                    @Ctx() ctx: Context,
+                ) {
+
+                    const telegramId = ctx.from!.id;
+
+                    await this.conversationService.saveSession(
+                        telegramId,
+                        {
+                            state:
+                ConversationState.HARD_DELETE_CATEGORY_WAITING_ID,
+                },
+            );
+
+            await ctx.reply(
+                CATEGORY_MESSAGES.ASK_HARD_DELETE_CATEGORY_ID,
+            );
+
+}
+
+                // Expense 
+
+                @Command('add')
+                async add(@Ctx() ctx: Context){
+                    console.log("ADD COMMAND");
 
 
                 const telegramId = ctx.from!.id;
@@ -144,6 +230,71 @@ export class TelegramUpdate {
             async categories(@Ctx() ctx: Context) {
             return this.categoriesService.categories(ctx);
 }
+            // Reports 
+            @Command("report")
+            async report(@Ctx() ctx: Context) {
+                return this.reportsService.report(ctx);
+            }
+            @Command('stats')
+                async stats(
+                    @Ctx() ctx: Context
+                ){
+
+                    return this.reportsService.stats(ctx);
+
+                }
+
+            // Budget ..
+            @Command("budget")
+                async budget(
+                    @Ctx() ctx: Context,
+                ) {
+
+                    if (
+                        ctx.message &&
+                        "text" in ctx.message &&
+                        ctx.message.text.trim().includes(" ")
+                    ) {
+
+                        return this.usersService.setBudget(ctx);
+
+                    }
+
+                    return this.usersService.budget(ctx);
+
+                }
+
+                // Export ....
+                @Command('export')
+            async export(
+            @Ctx() ctx: Context,
+            ){
+
+                const text =
+                ctx.message &&
+                        "text" in ctx.message
+                        ? ctx.message.text
+                        : "";
+            const monthly =
+            text.includes("monthly");
+
+
+            return this.exportService.exportExpenses(
+                ctx,
+                monthly,
+            );
+
+        }
+
+        @Command('exportPdf')
+        async exportPdf(
+            @Ctx() ctx: Context,
+        ){
+
+            return this.exportService.exportPdf(ctx);
+
+        }
+
 
             @On('text')
             async onText(@Ctx() ctx: Context) {
@@ -151,8 +302,6 @@ export class TelegramUpdate {
             if (!ctx.message || !('text' in ctx.message)) {
                 return;
             }
-
-
             // Ignore Telegram commands
             if (ctx.message.text.startsWith('/')) {
                 return;

@@ -19,6 +19,8 @@ export interface IConversationSession {
     // Category
     categoryName?: string;
 
+    categoryId?: string;
+
     
     expenseDraft?: {
 
