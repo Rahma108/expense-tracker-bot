@@ -5,12 +5,14 @@ import { ExpensesService } from './expense.service';
 import { ExpenseRepository } from '../../common/repository/expense.repository';
 import { ExpenseAmountHandler } from '../conversation/handlers/add-expense-amount.handler';
 import { UsersModule } from '../users/users.module';
+import { AiModule } from '../ai/ai.module';
 
  @Module({
   imports: [
     ExpenseModel,
     forwardRef(() => ConversationModule),
-    UsersModule 
+    UsersModule ,
+    AiModule,
   ],
     providers:[
         ExpenseRepository,

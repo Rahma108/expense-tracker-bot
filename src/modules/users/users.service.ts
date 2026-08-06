@@ -5,6 +5,7 @@ import { GeneralMessages, UserMessages } from '../../common/messages';
 import { UserRepository } from '../../common/repository/user.repository';
 import { ConversationService } from '../conversation/conversation.service';
 import { ConversationState } from '../../common/enums';
+import { MAIN_MENU_KEYBOARD } from '../../common/keyboards/main.keyboard';
 
 
 @Injectable()
@@ -20,32 +21,34 @@ export class UsersService {
 
     async start(ctx: Context) {
 
-        const telegramId = ctx.from!.id;
+    const telegramId = ctx.from!.id;
 
 
-        const user =
-        await this.usersRepository.findByTelegramId(
-            telegramId,
-        );
+    const user =
+    await this.usersRepository.findByTelegramId(
+        telegramId,
+    );
 
 
-        if(user){
-
-            await ctx.reply(
-                UserMessages.WELCOME_BACK(
-                    user.firstName
-                )
-            );
-
-            return;
-        }
-
+    if(user){
 
         await ctx.reply(
-            UserMessages.WELCOME
+            UserMessages.WELCOME_BACK(
+                user.firstName
+            ),
+            MAIN_MENU_KEYBOARD,
         );
 
+        return;
     }
+
+
+    await ctx.reply(
+        UserMessages.WELCOME,
+        MAIN_MENU_KEYBOARD,
+    );
+
+}
 
 
 

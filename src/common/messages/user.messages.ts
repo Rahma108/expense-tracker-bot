@@ -90,61 +90,76 @@ export const UserMessages = {
               💰 <b>Currency:</b> ${currency ?? 'EGP'}`,
 
           HELP: `
-            📚 Expense Tracker Commands
+                📚 *Expense Tracker Bot*
 
-                👤 Account
+                👤 *Account*
                 /start              - Start the bot
                 /register           - Create your account
                 /profile            - View your profile
 
-                💰 Expenses
+
+                💰 *Expenses*
                 /add                - Add a new expense
                 /expenses           - View all expenses
                 /update             - Update an existing expense
-                /delete             - Move expense to trash (soft delete)
+                /delete             - Move expense to trash
                 /trash              - View deleted expenses
                 /restore            - Restore deleted expense
                 /hard               - Permanently delete expense
 
+
+                📂 *Categories*
+                /addCategory        - Create category
+                /categories         - View categories
+                /updateCategory     - Update category
+                /deleteCategory     - Delete category
+                /categoryTrash      - View deleted categories
+                /restoreCategory    - Restore category
+                /hardDeleteCategory - Permanently delete category
+
+
+                📊 *Reports*
+                /report             - Detailed expense report
+                /stats              - Quick statistics
+
+
+                💰 *Budget*
+                /budget             - View current budget
+                /budget 5000        - Set monthly budget
+
+
+                📄 *Export*
+                /export             - Export expenses as CSV
+                /export monthly     - Export current month CSV
+                /exportPdf          - Export PDF report
+
+
+                🤖 *AI Features*
+                /scan               - Scan receipt using OCR
+                /insights           - Smart spending insights
+                /forecast           - Monthly spending forecast
+                🎤 Voice
+                /voice                  Send voice message:
+                "Paid 200 EGP for lunch"
+
+
+                🎛 *Quick Menu Buttons*
+
+                💰 Add Expense
+                📷 Scan Receipt
+                📊 Report
+                📈 Statistics
+                🤖 AI Insights
+                🔮 Forecast
                 📂 Categories
-                /addCategory         - Create a new category
-                /categories          - View all categories
-                /updateCategory      - Update a category
-                /deleteCategory      - Move category to trash
-                /categoryTrash       - View deleted categories
-                /restoreCategory     - Restore deleted category
-                /hardDeleteCategory  - Permanently delete category
-
-                📊 Reports & Statistics
-
-                /report         -View detailed expense report
-
-                /stats          -View quick statistics
-
-                💰 Budget
-
-                /budget         -View current budget
-                /budget 5000    -Set monthly budget
+                👤 Profile
+                ❓ Help
 
 
-                📄 Export
+                ⚙️ *Other*
 
-                /export           -Export all expenses as CSV
-                /export monthly   -Export current month expenses
-                /exportPdf       -Export expenses as PDF report
-  
-                
-
-                🤖 AI Features
-
-                /scan              - Scan receipt image using OCR
-                /insights          - View spending insights
-                /forecast          - Predict next month spending
-
-                ⚙️ Other
-                /help               - Show help
                 /cancel             - Cancel current operation
-            `,
+                `,
         INVALID_FIRST_NAME: `
             ❌ Invalid first name.
 

@@ -2,6 +2,8 @@ import { Injectable } from "@nestjs/common";
 import { Context } from "telegraf";
 import { ExpensesService } from "../expenses/expense.service";
 import { UserRepository } from "../../common/repository";
+import { ExpenseRepository } from "../../common/repository/expense.repository";
+import { AiService } from "../ai/ai.service";
 
 @Injectable()
 export class ReportsService {
@@ -9,6 +11,9 @@ export class ReportsService {
     constructor(
         private readonly expensesService: ExpensesService,
         private readonly usersRepository: UserRepository,
+        private readonly expenseRepository: ExpenseRepository,
+        private readonly aiService: AiService,
+
     ) {}
 
     async report(ctx: Context) {
@@ -178,6 +183,108 @@ export class ReportsService {
                     }
                 );
 
+}
+
+   async insights(ctx: Context) {
+    const telegramId = ctx.from!.id;
+
+    const user = await this.usersRepository.findByTelegramId(
+        telegramId,
+    );
+
+    if (!user) {
+        return ctx.reply("❌ User not found");
+    }
+
+    const expenses = await this.expenseRepository.find({
+        filter: {
+            userId: user._id,
+            deletedAt: null,
+        },
+    });
+
+    if (!expenses.length) {
+        return ctx.reply("❌ No expenses found.");
+    }
+
+    const expensesForAI = expenses.map((expense) => ({
+        amount: expense.amount,
+        category: expense.category,
+        note: expense.note,
+        merchant: expense.merchant,
+        date: expense.date,
+        currency: expense.currency,
+    }));
+
+    const result = await this.aiService.generateInsights(
+        expensesForAI,
+    );
+
+   await ctx.reply(
+`
+🤖 *Smart Spending Insights*
+
+━━━━━━━━━━━━━━
+
+📊 *Summary*
+${result.summary}
+
+🏆 *Top Category*
+${result.topCategory}
+
+⚠️ *Budget Status*
+${result.warning}
+
+💡 *Recommendations*
+
+${result.tips.map(t => `• ${t}`).join('\n')}
+
+━━━━━━━━━━━━━━
+`,
+{
+    parse_mode: "Markdown",
+},
+);
+
+}
+
+   async forecast(ctx: Context) {
+    const telegramId = ctx.from!.id;
+
+    const user = await this.usersRepository.findByTelegramId(telegramId);
+
+    if (!user) {
+        return ctx.reply("❌ User not found");
+    }
+
+    const spent = await this.expensesService.getCurrentMonthTotal(user._id);
+
+    const allExpenses =await this.expensesService.findAllByUser(user._id);
+    const expenses = allExpenses.filter(
+    expense => expense.currency === user.currency,
+);
+    const forecast =await this.aiService.forecast(expenses);
+
+   await ctx.reply(
+`
+📈 *Monthly Forecast*
+
+💸 Current Spending
+${spent} ${user.currency}
+
+📊 Expected Spending
+${forecast.forecast} ${user.currency}
+
+🎯 Confidence
+${forecast.confidence}
+
+📝 Reason
+${forecast.reason}
+`,
+{
+    parse_mode: "Markdown",
+}
+);
 }
 
 }

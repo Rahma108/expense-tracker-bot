@@ -9,6 +9,8 @@ import { CategoriesModule } from '../categories/categories.module';
 import { ReportsModule } from '../reports/reports.module';
 import { ExportModule } from '../export/export.module';
 import { RedisModule } from '../../redis/redis.module';
+import { VoiceExpenseHandler } from '../conversation/handlers/voice-expense.handler';
+import { AiModule } from '../ai/ai.module';
 
 @Module({
     imports: [
@@ -18,16 +20,19 @@ import { RedisModule } from '../../redis/redis.module';
             token: config.get<string>('BOT_TOKEN')!,
         }),
         }),
+
+       AiModule,  
         UsersModule,
         ConversationModule ,
         ExpensesModule ,
         CategoriesModule,
         ReportsModule ,
         ExportModule,
-        RedisModule
+        RedisModule,
+        
         
 
     ],
-    providers: [TelegramUpdate],
+    providers: [TelegramUpdate , VoiceExpenseHandler,],
 })
 export class TelegramModule {}

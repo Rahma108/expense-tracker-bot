@@ -29,6 +29,7 @@ import {
   UpdateExpenseAmountHandler,
   UpdateExpenseIdHandler,
   UpdateExpenseNoteHandler,
+  
 } from './handlers';
 
 import { UpdateExpenseCategoryHandler } from './handlers/update-expense-category.handler';
@@ -36,6 +37,7 @@ import { AddCategoryHandler } from './handlers/add-category.handler';
 
 import { CategoriesModule } from '../categories/categories.module';
 import { AiModule } from '../ai/ai.module';
+import { VoiceExpenseHandler } from './handlers/voice-expense.handler';
 
 
 @Module({
@@ -87,6 +89,7 @@ providers:[
 
     // Conversation State Handler
     ScanReceiptHandler,
+    VoiceExpenseHandler,
 
 
 
@@ -129,6 +132,7 @@ providers:[
 
 
             scanReceiptHandler:ScanReceiptHandler,
+            voiceExpenseHandler :VoiceExpenseHandler ,
 
 
         ) => [
@@ -166,6 +170,7 @@ providers:[
 
 
             scanReceiptHandler,
+            voiceExpenseHandler 
 
         ],
 
@@ -205,6 +210,7 @@ providers:[
 
 
             ScanReceiptHandler,
+            VoiceExpenseHandler 
 
         ],
 

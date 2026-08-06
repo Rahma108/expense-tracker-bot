@@ -4,6 +4,13 @@ import OpenAI from 'openai';
 import { OcrService } from './ocr.service';
 import { RECEIPT_SYSTEM_PROMPT } from './prompts/receipt.prompt';
 import { ReceiptDto } from './dto/receipt.dto';
+import { CategoryDto } from './dto/category.dto';
+import { CATEGORY_SYSTEM_PROMPT } from './prompts/category.prompt';
+import { CLASSIFY_CATEGORY } from './prompts/classify-expense.prompt';
+import { SPENDING_INSIGHTS_PROMPT } from './prompts/insights.prompt';
+import { SpendingInsightsDto } from './dto/spending.insights.dto';
+import { FORECAST_SYSTEM_PROMPT } from './prompts/forecast.prompt';
+import { VOICE_EXPENSE_PROMPT } from './prompts/voice.prompt';
 
 @Injectable()
 export class AiService  {
@@ -85,4 +92,189 @@ export class AiService  {
                 return result;
     }
 
+
+    async classifyExpense(text: string): Promise<CategoryDto> {
+        const response = await this.ai.chat.completions.create({
+            model: 'google/gemini-2.5-flash',
+            max_tokens: 100,
+
+            messages: [
+            {
+                role: 'system',
+                content: CATEGORY_SYSTEM_PROMPT,
+            },
+            {
+                role: 'user',
+                content: text,
+            },
+            ],
+        });
+
+        const content = response?.choices?.[0]?.message?.content;
+
+        if (!content) {
+            throw new Error('AI returned empty response');
+        }
+
+        const cleanContent = content
+            .replace(/```json/g, '')
+            .replace(/```/g, '')
+            .trim();
+
+        return JSON.parse(cleanContent);
+        }
+
+    async suggestCategory(note: string): Promise<string> {
+    const response = await this.ai.chat.completions.create({
+        model: "google/gemini-2.5-flash",
+        max_tokens: 20,
+
+        messages: [
+            {
+                role: "system",
+                content: CLASSIFY_CATEGORY,
+            },
+            {
+                role: "user",
+                content: note,
+            },
+        ],
+    });
+
+    const allowedCategories = [
+            "Food",
+            "Transportation",
+            "Shopping",
+            "Entertainment",
+            "Bills",
+            "Healthcare",
+            "Education",
+            "Travel",
+            "Salary",
+            "Income",
+            "Groceries",
+            "Subscription",
+            "Other",
+            ];
+
+            const category = response.choices[0].message.content?.trim() ?? "Other";
+
+            return allowedCategories.includes(category)
+            ? category
+            : "Other";
             }
+
+    async generateInsights(
+    expenses: any[],
+): Promise<SpendingInsightsDto> {
+
+    const response =
+    await this.ai.chat.completions.create({
+
+        model: "google/gemini-2.5-flash",
+
+        messages: [
+
+            {
+                role: "system",
+                content: SPENDING_INSIGHTS_PROMPT,
+            },
+
+            {
+                role: "user",
+                content: JSON.stringify(expenses),
+            },
+
+        ],
+
+        max_tokens: 500,
+
+    });
+
+    const content =
+    response.choices[0].message.content ?? "";
+
+    return JSON.parse(
+        content
+            .replace(/```json/g, "")
+            .replace(/```/g, "")
+            .trim(),
+    );
+}
+
+    async forecast(expenses: any[]) {
+
+    const response =
+    await this.ai.chat.completions.create({
+
+        model: "google/gemini-2.5-flash",
+        max_tokens: 200,
+
+        messages: [
+
+            {
+                role: "system",
+                content: FORECAST_SYSTEM_PROMPT,
+            },
+
+            {
+                role: "user",
+                content: JSON.stringify(expenses),
+            },
+
+        ],
+
+    });
+
+    const content =
+        response.choices[0].message.content ?? "";
+
+    return JSON.parse(
+        content
+            .replace(/```json/g, "")
+            .replace(/```/g, "")
+            .trim(),
+    );
+}
+
+    async extractExpense(text:string){
+
+                const response =
+                await this.ai.chat.completions.create({
+
+                model:"google/gemini-2.5-flash",
+
+                max_tokens:300,
+
+                messages:[
+
+                {
+                role:"system",
+                content:VOICE_EXPENSE_PROMPT
+                },
+
+                {
+                role:"user",
+                content:text
+                }
+
+                ]
+
+                });
+
+
+                const content =
+                response.choices[0].message.content;
+
+
+                if(!content){
+                    throw new Error("AI returned empty response");
+                }
+
+
+                return JSON.parse(
+                    content.replace(/```json|```/g,"").trim()
+                );
+
+                }
+                }

@@ -8,6 +8,7 @@ import { ConversationService } from '../conversation.service';
 import { UserRepository } from '../../../common/repository/user.repository';
 import { ExpensesService } from '../../expenses/expense.service';
 import { EXPENSE_MESSAGES, UserMessages } from '../../../common/messages';
+import { AiService } from '../../ai/ai.service';
 
 
 @Injectable()
@@ -25,6 +26,7 @@ constructor(
     private readonly expensesService: ExpensesService,
 
     private readonly userRepository: UserRepository,
+    private readonly aiService: AiService,
 ){}
 
 
@@ -46,46 +48,39 @@ async handle(ctx: Context){
 
 
 
-            const note =
-            ctx.message.text.trim();
+            const note =ctx.message.text.trim();
+            const finalNote = note.toLowerCase() === "skip" ? undefined : note;
+            const session = await this.conversationService.getSession(
+                        telegramId,
+                    );
 
+                    if (!session || !session.expenseDraft) {
+                        await ctx.reply(
+                            EXPENSE_MESSAGES.SESSION_EXPIRED,
+                        );
+                        return;
+                    }
 
+                    let category = session.expenseDraft.category!;
 
-            const session =
-            await this.conversationService.getSession(
-                telegramId
-            );
+                    if (finalNote &&category.toLowerCase() === "other"
+                    ) {
+                        category = await this.aiService.suggestCategory(finalNote);
+                    }
 
+                    const user =
+                    await this.userRepository.findByTelegramId(
+                        telegramId
+                    );
 
+                    if(!user){
 
-            if(!session || !session.expenseDraft){
+                        await ctx.reply(
+                            UserMessages.PROFILE_NOT_FOUND
+                        );
 
-                await ctx.reply(
-                    EXPENSE_MESSAGES.SESSION_EXPIRED
-                );
-
-                return;
-            }
-
-
-
-            const user =
-            await this.userRepository.findByTelegramId(
-                telegramId
-            );
-
-
-
-            if(!user){
-
-                await ctx.reply(
-                    UserMessages.PROFILE_NOT_FOUND
-                );
-
-                return;
-            }
-
-
+                        return;
+                    }
 
             await this.expensesService.createExpense({
 
@@ -94,14 +89,8 @@ async handle(ctx: Context){
                 amount:
                 session.expenseDraft.amount!,
 
-                category:
-                session.expenseDraft.category!,
-
-                note:
-                note === 'skip'
-                ? undefined
-                : note,
-
+                category,
+                note: finalNote,
                 currency:
                 user.currency ?? 'EGP',
 
@@ -168,18 +157,6 @@ async handle(ctx: Context){
         );
 
         await ctx.reply(message);
-
-
-
-    await this.conversationService.clearSession(
-        telegramId
-    );
-
-
-
-    await ctx.reply(
-        EXPENSE_MESSAGES.CREATED
-    );
 
 }
 

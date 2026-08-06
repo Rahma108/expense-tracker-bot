@@ -1,4 +1,4 @@
-import { Start, Update, Ctx,  On, Command, Action } from 'nestjs-telegraf';
+import { Start, Update, Ctx,  On, Command, Action, Hears } from 'nestjs-telegraf';
 import { Context } from 'telegraf';
 import { UsersService } from '../users/users.service';
 import { Injectable } from '@nestjs/common';
@@ -12,6 +12,7 @@ import { ReportsService } from '../reports/reports.service';
 import { ExportService } from '../export/export.service';
 import { RedisKeys, RedisService } from '../../redis/redis.service';
 import { UserRepository } from '../../common/repository';
+import { VoiceExpenseHandler } from '../conversation/handlers/voice-expense.handler';
 
 // Events in telegram ............
 
@@ -28,6 +29,7 @@ export class TelegramUpdate {
             private readonly exportService: ExportService,
             private readonly redisService: RedisService,
             private readonly usersRepository: UserRepository,
+                private readonly voiceExpenseHandler: VoiceExpenseHandler,
         ) {}
             @Start()
             async start(@Ctx() ctx: Context) {
@@ -411,27 +413,113 @@ export class TelegramUpdate {
         }
 
 
+        @Command("insights")
+            async insights(
+                @Ctx() ctx: Context,
+            ){
+                return this.reportsService.insights(ctx);
+            }
+
+            @Command("forecast")
+            async forecast(@Ctx() ctx: Context) {
+                return this.reportsService.forecast(ctx);
+                        }
+            
+            @On('voice')
+            async handleVoice(
+                @Ctx() ctx: Context,
+            ) {
+
+                console.log("🎤 VOICE RECEIVED");
+
+                await this.voiceExpenseHandler.handle(ctx);
+
+}
+            
 
 
 
 
 
 
+            @Hears("💰 Add Expense")
+                async addExpenseButton(
+                    @Ctx() ctx: Context
+                ){
+                    return this.add(ctx);
+                }
 
 
+                @Hears("📷 Scan Receipt")
+                async scanReceiptButton(
+                    @Ctx() ctx: Context
+                ){
+                    return this.scan(ctx);
+                }
 
 
+                @Hears("📊 Report")
+                async reportButton(
+                    @Ctx() ctx: Context
+                ){
+                    return this.report(ctx);
+                }
 
 
+                @Hears("📈 Statistics")
+                async statsButton(
+                    @Ctx() ctx: Context
+                ){
+                    return this.stats(ctx);
+                }
 
 
+                @Hears("🤖 AI Insights")
+                async insightsButton(
+                    @Ctx() ctx: Context
+                ){
+                    return this.reportsService.insights(ctx);
+                }
 
 
+                @Hears("🔮 Forecast")
+                async forecastButton(
+                    @Ctx() ctx: Context
+                ){
+                    return this.reportsService.forecast(ctx);
+                }
 
 
+                @Hears("📂 Categories")
+                async categoriesButton(
+                    @Ctx() ctx: Context
+                ){
+                    return this.categories(ctx);
+                }
 
 
+                @Hears("👤 Profile")
+                async profileButton(
+                    @Ctx() ctx: Context
+                ){
+                    return this.profile(ctx);
+                }
 
+
+                @Hears("❓ Help")
+                async helpButton(
+                    @Ctx() ctx: Context
+                ){
+                    return this.help(ctx);
+                }
+
+
+                @Hears("❌ Cancel")
+                async cancelButton(
+                    @Ctx() ctx: Context
+                ){
+                    return this.cancel(ctx);
+                }
                     @On('text')
                     async onText(@Ctx() ctx: Context) {
 
@@ -439,7 +527,21 @@ export class TelegramUpdate {
                         return;
                     }
                     // Ignore Telegram commands
-                    if (ctx.message.text.startsWith('/')) {
+                if (
+                        ctx.message.text.startsWith('/') ||
+                        [
+                            "💰 Add Expense",
+                            "📷 Scan Receipt",
+                            "📊 Report",
+                            "📈 Statistics",
+                            "🤖 AI Insights",
+                            "🔮 Forecast",
+                            "📂 Categories",
+                            "👤 Profile",
+                            "❓ Help",
+                            "❌ Cancel",
+                        ].includes(ctx.message.text)
+                    ) {
                         return;
                     }
 

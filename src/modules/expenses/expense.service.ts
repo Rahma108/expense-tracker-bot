@@ -7,6 +7,7 @@ import { UserRepository } from '../../common/repository';
 import { ConversationState } from '../../common/enums';
 import { ConversationService } from '../conversation/conversation.service';
 import { ReceiptDto } from '../ai/dto/receipt.dto';
+import { AiService } from '../ai/ai.service';
 
 
 @Injectable()
@@ -16,8 +17,19 @@ export class ExpensesService {
 constructor(
         private readonly expenseRepository: ExpenseRepository,
         private readonly userRepository: UserRepository,
-        private readonly conversationService:ConversationService
+        private readonly conversationService:ConversationService,
+        private readonly aiService: AiService,
+
 ){}
+
+        async findAllByUser(userId: Types.ObjectId) {
+        return this.expenseRepository.find({
+            filter: {
+                userId,
+                deletedAt: null,
+            },
+        });
+    }
 
 
 
@@ -554,6 +566,11 @@ return result[0]?.average ?? 0;
 });
     return expense
    
+}
+
+
+    async suggestCategory(note: string): Promise<string> {
+    return this.aiService.suggestCategory(note);
 }
 
 }

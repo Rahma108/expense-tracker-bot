@@ -2,13 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { RedisService } from '../../redis/redis.service';
 import { IConversationSession } from '../../common/interfaces/conversation-session.interface';
 import { ConversationState } from '../../common/enums';
-
-@Injectable()
 @Injectable()
 export class ConversationService {
   constructor(
     private readonly redisService: RedisService,
+    
     ) {}
+
+
 
     async getSession(
         telegramId: number,
@@ -34,6 +35,22 @@ export class ConversationService {
     });
 
 }
+
+
+            async startConversation(
+                telegramId: number,
+                state: ConversationState,
+            ) {
+
+                await this.saveSession(
+                    telegramId,
+                    {
+                        state,
+                        expenseDraft: {},
+                    },
+                );
+
+            }
 
     async clearSession(
         telegramId: number,
@@ -85,4 +102,9 @@ export class ConversationService {
             );
 
         }
+
+
+
+
+        
 }
