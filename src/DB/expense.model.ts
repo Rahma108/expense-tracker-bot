@@ -48,6 +48,12 @@ export class Expense implements IExpense {
     note?:string;
 
 
+    @Prop({
+  type:String,
+  default:null,
+})
+merchant?: string;
+
 
     @Prop({
         type:Date,

@@ -1,19 +1,41 @@
 import { forwardRef, Module } from '@nestjs/common';
+
 import { RegisterFirstNameHandler } from './handlers/register-first-name.handler';
 import { RegisterLastNameHandler } from './handlers/register-last-name.handler';
+
 import { RedisModule } from '../../redis/redis.module';
 import { UsersModule } from '../users/users.module';
+
 import { ConversationService } from './conversation.service';
 import { ConversationRouterService } from './conversation-router.service';
+
 import { CONVERSATION_HANDLERS } from '../../common/constants';
+
 import { ExpenseAmountHandler } from './handlers/add-expense-amount.handler';
 import { ExpenseCategoryHandler } from './handlers/add-expense-category.handler';
 import { ExpenseNoteHandler } from './handlers/add-expense-note.handler';
+
 import { ExpensesModule } from '../expenses/expenses.module';
-import { DeleteCategoryHandler, DeleteExpenseIdHandler, HardDeleteCategoryHandler, HardDeleteExpenseIdHandler, RestoreCategoryHandler, RestoreExpenseIdHandler, UpdateCategoryIdHandler, UpdateCategoryNameHandler, UpdateExpenseAmountHandler, UpdateExpenseIdHandler, UpdateExpenseNoteHandler } from './handlers';
+import {
+  DeleteCategoryHandler,
+  DeleteExpenseIdHandler,
+  HardDeleteCategoryHandler,
+  HardDeleteExpenseIdHandler,
+  RestoreCategoryHandler,
+  RestoreExpenseIdHandler,
+  ScanReceiptHandler,
+  UpdateCategoryIdHandler,
+  UpdateCategoryNameHandler,
+  UpdateExpenseAmountHandler,
+  UpdateExpenseIdHandler,
+  UpdateExpenseNoteHandler,
+} from './handlers';
+
 import { UpdateExpenseCategoryHandler } from './handlers/update-expense-category.handler';
 import { AddCategoryHandler } from './handlers/add-category.handler';
+
 import { CategoriesModule } from '../categories/categories.module';
+import { AiModule } from '../ai/ai.module';
 
 
 @Module({
@@ -21,10 +43,11 @@ import { CategoriesModule } from '../categories/categories.module';
 imports:[
     RedisModule,
     forwardRef(() => ExpensesModule),
-    forwardRef(()=>UsersModule),
+    forwardRef(() => UsersModule),
     forwardRef(() => CategoriesModule),
-    
+    AiModule,
 ],
+
 
 providers:[
 
@@ -35,98 +58,167 @@ providers:[
 
     RegisterFirstNameHandler,
     RegisterLastNameHandler,
+
     ExpenseAmountHandler,
     ExpenseCategoryHandler,
     ExpenseNoteHandler,
+
+
     UpdateExpenseAmountHandler,
     UpdateExpenseCategoryHandler,
     UpdateExpenseNoteHandler,
     UpdateExpenseIdHandler,
-    DeleteExpenseIdHandler ,
+
+
+    DeleteExpenseIdHandler,
     RestoreExpenseIdHandler,
     HardDeleteExpenseIdHandler,
+
+
     AddCategoryHandler,
+
     UpdateCategoryIdHandler,
     UpdateCategoryNameHandler,
+
     DeleteCategoryHandler,
     RestoreCategoryHandler,
     HardDeleteCategoryHandler,
 
 
+    // Conversation State Handler
+    ScanReceiptHandler,
+
+
+
+
+
     {
         provide: CONVERSATION_HANDLERS,
 
+
         useFactory: (
+
             firstNameHandler:RegisterFirstNameHandler,
             lastNameHandler:RegisterLastNameHandler,
+
             expenseAmountHandler:ExpenseAmountHandler,
             expenseCategoryHandler:ExpenseCategoryHandler,
-            expenseNoteHandler: ExpenseNoteHandler,
-            updateExpenseAmountHandler: UpdateExpenseAmountHandler,
-            updateExpenseCategoryHandler: UpdateExpenseCategoryHandler,
-            updateExpenseNoteHandler: UpdateExpenseNoteHandler,
-            updateExpenseIdHandler: UpdateExpenseIdHandler,
+            expenseNoteHandler:ExpenseNoteHandler,
+
+
+            updateExpenseAmountHandler:UpdateExpenseAmountHandler,
+            updateExpenseCategoryHandler:UpdateExpenseCategoryHandler,
+            updateExpenseNoteHandler:UpdateExpenseNoteHandler,
+            updateExpenseIdHandler:UpdateExpenseIdHandler,
+
+
             deleteExpenseIdHandler:DeleteExpenseIdHandler,
             restoreExpenseIdHandler:RestoreExpenseIdHandler,
             hardDeleteExpenseIdHandler:HardDeleteExpenseIdHandler,
-            addCategoryHandler:AddCategoryHandler ,
+
+
+            addCategoryHandler:AddCategoryHandler,
+
             updateCategoryIdHandler:UpdateCategoryIdHandler,
             updateCategoryNameHandler:UpdateCategoryNameHandler,
+
+
             deleteCategoryHandler:DeleteCategoryHandler,
             restoreCategoryHandler:RestoreCategoryHandler,
-            hardDeleteCategoryHandler: HardDeleteCategoryHandler
-        )=>[
+            hardDeleteCategoryHandler:HardDeleteCategoryHandler,
+
+
+            scanReceiptHandler:ScanReceiptHandler,
+
+
+        ) => [
 
             firstNameHandler,
             lastNameHandler,
+
+
             expenseAmountHandler,
-            expenseCategoryHandler ,
+            expenseCategoryHandler,
             expenseNoteHandler,
+
+
             updateExpenseAmountHandler,
             updateExpenseCategoryHandler,
             updateExpenseNoteHandler,
-            updateExpenseIdHandler ,
-            deleteExpenseIdHandler ,
+            updateExpenseIdHandler,
+
+
+            deleteExpenseIdHandler,
             restoreExpenseIdHandler,
             hardDeleteExpenseIdHandler,
-            addCategoryHandler ,
+
+
+            addCategoryHandler,
+
+
             updateCategoryIdHandler,
             updateCategoryNameHandler,
+
+
             deleteCategoryHandler,
             restoreCategoryHandler,
-            hardDeleteCategoryHandler
+            hardDeleteCategoryHandler,
+
+
+            scanReceiptHandler,
+
         ],
 
+
         inject:[
+
             RegisterFirstNameHandler,
             RegisterLastNameHandler,
+
+
             ExpenseAmountHandler,
             ExpenseCategoryHandler,
-            ExpenseNoteHandler ,
-            UpdateExpenseAmountHandler, 
+            ExpenseNoteHandler,
+
+
+            UpdateExpenseAmountHandler,
             UpdateExpenseCategoryHandler,
             UpdateExpenseNoteHandler,
             UpdateExpenseIdHandler,
+
+
             DeleteExpenseIdHandler,
             RestoreExpenseIdHandler,
             HardDeleteExpenseIdHandler,
+
+
             AddCategoryHandler,
+
+
             UpdateCategoryIdHandler,
             UpdateCategoryNameHandler,
+
+
             DeleteCategoryHandler,
             RestoreCategoryHandler,
-            HardDeleteCategoryHandler
+            HardDeleteCategoryHandler,
+
+
+            ScanReceiptHandler,
+
         ],
 
     },
 
-
 ],
+
+
 
 exports:[
     ConversationService,
     ConversationRouterService,
 ],
+
 
 })
 export class ConversationModule {}

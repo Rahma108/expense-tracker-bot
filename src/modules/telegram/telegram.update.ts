@@ -1,4 +1,4 @@
-import { Start, Update, Ctx,  On, Command } from 'nestjs-telegraf';
+import { Start, Update, Ctx,  On, Command, Action } from 'nestjs-telegraf';
 import { Context } from 'telegraf';
 import { UsersService } from '../users/users.service';
 import { Injectable } from '@nestjs/common';
@@ -10,21 +10,24 @@ import { ExpensesService } from '../expenses/expense.service';
 import { CategoriesService } from '../categories/categories.service';
 import { ReportsService } from '../reports/reports.service';
 import { ExportService } from '../export/export.service';
+import { RedisKeys, RedisService } from '../../redis/redis.service';
+import { UserRepository } from '../../common/repository';
 
 // Events in telegram ............
 
 @Update()
 @Injectable()
 export class TelegramUpdate {
-        constructor(
+       constructor(
             private readonly usersService: UsersService,
             private readonly conversationRouter: ConversationRouterService,
-            private readonly conversationService : ConversationService,
-            private readonly expensesService : ExpensesService ,
-            private readonly categoriesService : CategoriesService,
+            private readonly conversationService: ConversationService,
+            private readonly expensesService: ExpensesService,
+            private readonly categoriesService: CategoriesService,
             private readonly reportsService: ReportsService,
             private readonly exportService: ExportService,
-
+            private readonly redisService: RedisService,
+            private readonly usersRepository: UserRepository,
         ) {}
             @Start()
             async start(@Ctx() ctx: Context) {
@@ -295,27 +298,167 @@ export class TelegramUpdate {
 
         }
 
+        //  Ai ............................
 
-            @On('text')
-            async onText(@Ctx() ctx: Context) {
+        @Command('scan')
+        async scan(ctx: Context) {
+            await this.conversationService.setState(
+                ctx.from!.id,
+                ConversationState.SCAN_RECEIPT_WAITING_IMAGE,
+            );
+            await ctx.reply(
+                "📷 Please send your receipt photo.",
 
-            if (!ctx.message || !('text' in ctx.message)) {
-                return;
-            }
-            // Ignore Telegram commands
-            if (ctx.message.text.startsWith('/')) {
-                return;
-            }
+            );
 
-
-            console.log('TEXT EVENT:', ctx.message);
-
-
-            return this.conversationRouter.handle(ctx);
         }
 
-                    
-                
+           @Action('receipt_save')
+        async saveReceipt(
+            @Ctx() ctx: Context
+        ){
+
+            console.log("🔥 SAVE BUTTON CLICKED");
 
 
-}
+            await ctx.answerCbQuery();
+
+
+            const telegramId = ctx.from!.id;
+
+
+            const receipt =
+            await this.redisService.get(
+                RedisKeys.expenseDraft(telegramId)
+            );
+
+
+            console.log("RECEIPT FROM REDIS:", receipt);
+
+
+
+            if(!receipt){
+
+                return ctx.editMessageText(
+                    "❌ Receipt expired"
+                );
+
+            }
+
+
+            const user =
+            await this.usersRepository.findByTelegramId(
+                telegramId
+            );
+
+
+            if(!user){
+
+                return ctx.editMessageText(
+                    "❌ User not found"
+                );
+
+            }
+
+
+            await this.expensesService.createFromReceipt(
+                user._id,
+                receipt
+            );
+
+
+                    await this.redisService.deleteKeys(
+                        RedisKeys.expenseDraft(telegramId)
+                    );
+
+
+                    await ctx.editMessageText(
+                `
+                ✅ Expense Saved Successfully
+
+                🏪 ${receipt.merchant}
+
+                💰 ${receipt.amount} ${receipt.currency}
+
+                📂 ${receipt.category}
+                `
+                );
+
+                }
+
+
+
+                @Action('receipt_cancel')
+                async cancelReceipt(
+                    @Ctx() ctx: Context
+                ){
+
+                    await ctx.answerCbQuery();
+
+
+                    const telegramId = ctx.from!.id;
+
+
+                    await this.redisService.deleteKeys(
+                        RedisKeys.expenseDraft(telegramId)
+                    );
+
+
+                    await ctx.editMessageText(
+                        "❌ Receipt Cancelled"
+                    );
+
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    @On('text')
+                    async onText(@Ctx() ctx: Context) {
+
+                    if (!ctx.message || !('text' in ctx.message)) {
+                        return;
+                    }
+                    // Ignore Telegram commands
+                    if (ctx.message.text.startsWith('/')) {
+                        return;
+                    }
+
+
+                    console.log('TEXT EVENT:', ctx.message);
+
+
+                    return this.conversationRouter.handle(ctx);
+                }
+                @On("photo")
+                    async onPhoto(@Ctx() ctx: Context) {
+
+                        console.log("PHOTO EVENT");
+
+                        return this.conversationRouter.handle(ctx);
+
+                    }
+                            
+                        
+
+
+        }

@@ -132,8 +132,14 @@ export const UserMessages = {
                 /export           -Export all expenses as CSV
                 /export monthly   -Export current month expenses
                 /exportPdf       -Export expenses as PDF report
+  
+                
 
+                🤖 AI Features
 
+                /scan              - Scan receipt image using OCR
+                /insights          - View spending insights
+                /forecast          - Predict next month spending
 
                 ⚙️ Other
                 /help               - Show help

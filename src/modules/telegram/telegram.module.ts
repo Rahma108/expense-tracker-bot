@@ -8,6 +8,7 @@ import { ExpensesModule } from '../expenses/expenses.module';
 import { CategoriesModule } from '../categories/categories.module';
 import { ReportsModule } from '../reports/reports.module';
 import { ExportModule } from '../export/export.module';
+import { RedisModule } from '../../redis/redis.module';
 
 @Module({
     imports: [
@@ -22,7 +23,8 @@ import { ExportModule } from '../export/export.module';
         ExpensesModule ,
         CategoriesModule,
         ReportsModule ,
-        ExportModule
+        ExportModule,
+        RedisModule
         
 
     ],

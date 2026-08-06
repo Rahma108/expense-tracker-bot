@@ -10,6 +10,7 @@ export interface IExpense {
     note?: string | null;
     date?: Date;
     currency?: string;
+    merchant?: string;
 
     deletedAt?:Date ;
     restoredAt?:Date;

@@ -11,6 +11,7 @@ import { UsersModule } from './modules/users/users.module';
 import { ConversationModule } from './modules/conversation/conversation.module';
 import { RedisModule } from './redis/redis.module';
 import { ExportModule } from './modules/export/export.module';
+import { AiModule } from './modules/ai/ai.module';
 
 @Module({
     imports: [
@@ -47,6 +48,7 @@ import { ExportModule } from './modules/export/export.module';
     ConversationModule,
     RedisModule,
     ExportModule,
+    AiModule,
     
 
   ],

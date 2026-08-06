@@ -6,6 +6,7 @@ import { EXPENSE_MESSAGES, UserMessages } from '../../common/messages';
 import { UserRepository } from '../../common/repository';
 import { ConversationState } from '../../common/enums';
 import { ConversationService } from '../conversation/conversation.service';
+import { ReceiptDto } from '../ai/dto/receipt.dto';
 
 
 @Injectable()
@@ -523,6 +524,36 @@ return result[0]?.average ?? 0;
 
             });
 
+}
+
+    // Ai 
+
+    async createFromReceipt(
+    userId: Types.ObjectId,
+    receipt: ReceiptDto,
+) {
+
+    const expense =  this.expenseRepository.create({
+    data: {
+        userId,
+
+        merchant: receipt.merchant,
+
+        amount: receipt.amount,
+
+        currency: receipt.currency ?? 'EGP',
+
+        category: receipt.category,
+
+        note: receipt.note,
+
+        date: receipt.date
+            ? new Date(receipt.date)
+            : new Date(),
+    }
+});
+    return expense
+   
 }
 
 }
