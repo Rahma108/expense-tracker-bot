@@ -1,6 +1,6 @@
-# 🤖 Expense Tracker Telegram Bot
+# 🤖 AI-Powered Expense Tracker Telegram Bot
 
-A smart **Telegram Expense Tracker Bot** built with **NestJS, Telegraf, MongoDB**, designed to help users manage daily expenses, track budgets, generate financial reports, and export expense data.
+A smart **AI-powered Telegram Expense Tracker Bot** built with **NestJS, Telegraf, MongoDB, Redis, OpenRouter AI, and OCR** to help users manage expenses, track budgets, scan receipts, generate financial reports, and receive AI-powered spending insights.
 
 ---
 
@@ -8,150 +8,281 @@ A smart **Telegram Expense Tracker Bot** built with **NestJS, Telegraf, MongoDB*
 
 ## 👤 User Management
 
-* User registration through Telegram
-* Profile management
-* Currency support
+- User Registration
+- Profile Management
+- Preferred Currency
+- Welcome Back Detection
 
 ---
 
 # 💰 Expense Management
 
-Users can manage their expenses through an interactive conversation flow.
+Manage expenses through an interactive Telegram conversation.
 
-Features:
+### Features
 
-* Add expenses
-* View all expenses
-* Update expenses
-* Soft delete expenses
-* View deleted expenses
-* Restore expenses
-* Permanently delete expenses
+- Add Expense
+- View Expenses
+- Update Expense
+- Soft Delete Expense
+- Restore Expense
+- Permanently Delete Expense
 
-### Expense Data:
+### Expense Information
 
-* Amount
-* Category
-* Note
-* Date
-* Currency
+- Amount
+- Category
+- Merchant
+- Note
+- Currency
+- Date
 
 ---
 
 # 📂 Category Management
 
-Complete category lifecycle management:
+Complete category lifecycle management.
 
-* Create custom categories
-* View categories
-* Update categories
-* Soft delete categories
-* Restore categories
-* Permanently delete categories
+- Create Category
+- View Categories
+- Update Category
+- Soft Delete Category
+- Restore Category
+- Permanently Delete Category
 
 ---
 
 # 📊 Reports & Statistics
 
-Generate detailed expense analytics:
+Generate detailed financial reports.
 
-* Total expenses
-* Total transactions
-* Average expense
-* Highest expense
-* Lowest expense
-* Expenses grouped by category
-* Top spending category
+Features include:
 
-Example:
-
-```
-📊 Expense Report
-
-💰 Total Expenses: 600 EGP
-📝 Transactions: 4
-
-💵 Average Expense: 200 EGP
-
-📂 Categories:
-Food
-Shopping
-Education
-
-📈 Highest Expense
-Shopping - 300 EGP
-
-📉 Lowest Expense
-Education - 100 EGP
-```
+- Total Expenses
+- Total Transactions
+- Average Expense
+- Highest Expense
+- Lowest Expense
+- Expenses by Category
+- Top Spending Category
 
 ---
 
 # 💰 Budget Tracking
 
-Users can set and monitor a monthly budget.
+Set and monitor monthly budgets.
 
 Example:
 
-```
+```bash
 /budget 5000
 ```
 
 The bot provides:
 
-* Current spending
-* Monthly budget limit
-* Usage percentage
-* Warning alerts when approaching or exceeding the limit
+- Current Spending
+- Remaining Budget
+- Budget Usage Percentage
+- Progress Bar
+- Over Budget Alerts
+
+Example
+
+```
+💰 Budget Summary
+
+💸 Spent: 5100 EGP
+🎯 Budget: 5000 EGP
+💵 Remaining: -100 EGP
+
+██████████ 102%
+
+🚨 Over Budget: 100 EGP
+```
 
 ---
 
-# 📄 Export System
+# 🤖 AI Features
+
+## 📷 AI Receipt Scanner (OCR)
+
+Upload a receipt image and the bot automatically:
+
+- Extracts text using OCR
+- Detects Merchant
+- Detects Amount
+- Detects Category
+- Detects Currency
+- Detects Purchase Date
+- Generates Expense Note
+- Shows a Preview Before Saving
+
+Example
+
+```
+📷 Receipt Detected
+
+Merchant: Starbucks
+
+Amount: 180 EGP
+
+Category: Food
+
+Date: 2026-08-01
+
+Save Expense?
+```
+
+---
+
+## 🧠 Smart Spending Insights
+
+AI analyzes user spending and provides:
+
+- Spending Summary
+- Top Spending Category
+- Spending Warning
+- Personalized Saving Tips
+
+Example
+
+```
+🤖 Smart Spending Insights
+
+📊 Summary
+
+You spent 4800 EGP this month.
+
+🏆 Top Category
+
+Food
+
+⚠️ Warning
+
+Food expenses represent most of your spending.
+
+💡 Tips
+
+• Reduce restaurant visits.
+• Cook more meals at home.
+• Set a weekly food budget.
+```
+
+---
+
+## 🔮 Monthly Expense Forecast
+
+Predict expected monthly spending using AI.
+
+Returns:
+
+- Current Spending
+- Expected Spending
+- Confidence Level
+- AI Explanation
+
+Example
+
+```
+📈 Monthly Forecast
+
+💸 Current Spending
+4800 EGP
+
+📊 Expected Spending
+10000 EGP
+
+🎯 Confidence
+Medium
+
+📝 Reason
+
+Based on your spending trend, your monthly expenses are expected to increase if the current pattern continues.
+```
+
+---
+
+# 📄 Export Reports
 
 Export expense data in different formats.
 
-## CSV Export
+## CSV
 
-Export all expenses:
-
-```
+```bash
 /export
 ```
 
-## Monthly Export
+## Monthly CSV
 
-Export current month expenses only:
-
-```
+```bash
 /export monthly
 ```
 
 ## PDF Report
 
-Generate a PDF expense report:
-
-```
-/export-pdf
+```bash
+/exportPdf
 ```
 
 ---
 
 # 📸 Screenshots
 
+## Start Menu
+
+<img src="./screenshots/start.png" width="350">
+
+---
+
 ## Help Menu
 
 <img src="./screenshots/help.png" width="350">
 
-## Add Expense Flow
+---
 
-<img src="./screenshots/expense-flow.png" width="350">
+## Add Expense
+
+<img src="./screenshots/add-expense.png" width="350">
+
+---
+
+## Receipt Scanner
+
+<img src="./screenshots/scan-receipt.png" width="350">
+
+---
+
+## AI Insights
+
+<img src="./screenshots/insights.png" width="350">
+
+---
+
+## Monthly Forecast
+
+<img src="./screenshots/forecast.png" width="350">
+
+---
+
+## Budget
+
+<img src="./screenshots/budget.png" width="350">
+
+---
+
+## Statistics
+
+<img src="./screenshots/stats.png" width="350">
+
+---
 
 ## Expense Report
 
 <img src="./screenshots/report.png" width="350">
 
+---
 
-## Export Reports
+## Export
 
 <img src="./screenshots/export.png" width="350">
 
@@ -161,7 +292,7 @@ Generate a PDF expense report:
 
 ## 👤 Account
 
-```
+```text
 /start
 /register
 /profile
@@ -171,7 +302,7 @@ Generate a PDF expense report:
 
 ## 💰 Expenses
 
-```
+```text
 /add
 /expenses
 /update
@@ -185,7 +316,7 @@ Generate a PDF expense report:
 
 ## 📂 Categories
 
-```
+```text
 /addCategory
 /categories
 /updateCategory
@@ -199,7 +330,7 @@ Generate a PDF expense report:
 
 ## 📊 Reports
 
-```
+```text
 /report
 /stats
 ```
@@ -208,19 +339,29 @@ Generate a PDF expense report:
 
 ## 💰 Budget
 
-```
+```text
 /budget
 /budget 5000
 ```
 
 ---
 
+## 🤖 AI
+
+```text
+/scan
+/insights
+/forecast
+```
+
+---
+
 ## 📄 Export
 
-```
+```text
 /export
 /export monthly
-/export-pdf
+/exportPdf
 ```
 
 ---
@@ -229,44 +370,60 @@ Generate a PDF expense report:
 
 ## Backend
 
-* NestJS
-* TypeScript
-* Telegraf
+- NestJS
+- TypeScript
+- Node.js
+- Telegraf
 
 ## Database
 
-* MongoDB
-* Mongoose
+- MongoDB
+- Mongoose
 
 ## Cache & Session
 
-* Redis
+- Redis (Upstash Redis)
 
-## Libraries
+## AI
 
-* json2csv
-* pdfkit
+- OpenRouter API
+- Google Gemini 2.5 Flash
+
+## OCR
+
+- OCR Text Recognition
+
+## Export
+
+- PDFKit
+- json2csv
 
 ---
 
 # 🏗 Project Architecture
 
-```
+```text
 src
 │
 ├── modules
+│   ├── ai
+│   │   ├── ai.service.ts
+│   │   ├── ocr.service.ts
+│   │   └── voice.service.ts
+│   │
+│   ├── telegram
 │   ├── users
 │   ├── expenses
 │   ├── categories
 │   ├── reports
 │   ├── export
 │   ├── conversation
-│   └── telegram
+│   └── redis
 │
 ├── common
 │   ├── repository
-│   ├── enums
 │   ├── interfaces
+│   ├── enums
 │   └── messages
 │
 └── main.ts
@@ -276,40 +433,43 @@ src
 
 # ⚙️ Installation
 
-Clone repository:
+Clone the repository
 
 ```bash
 git clone <repository-url>
 ```
 
-Install dependencies:
+Install dependencies
 
 ```bash
 npm install
 ```
 
-Create `.env` file:
+Create a `.env` file
 
 ```env
 MONGODB_URI=
-REDIS_HOST=
-REDIS_PORT=
-TELEGRAM_BOT_TOKEN=
+
+BOT_TOKEN=
+
+REDIS_URL=
+
+OPENROUTER_API_KEY=
 ```
 
-Run development:
+Run Development
 
 ```bash
 npm run start:dev
 ```
 
-Build:
+Build
 
 ```bash
 npm run build
 ```
 
-Run production:
+Run Production
 
 ```bash
 npm run start:prod
@@ -319,14 +479,12 @@ npm run start:prod
 
 # 🔮 Future Improvements
 
-Planned features:
-
-* 📷 OCR Receipt Scanner
-* 🎤 Voice Expense Creation
-* 🤖 AI Expense Insights
-* 📈 Expense Prediction
-* 🔔 Smart Notifications
-* 📊 Advanced Analytics Dashboard
+- 🎤 Voice Expense Recording
+- 🔔 Smart Budget Notifications
+- 📅 Recurring Expenses
+- 📈 Advanced Dashboard
+- 🌍 Multi-language Support
+- ☁️ Cloud Deployment
 
 ---
 
@@ -336,4 +494,4 @@ Planned features:
 
 Backend Developer
 
-NestJS | Node.js | MongoDB | Backend Systems
+**NestJS • Node.js • MongoDB • Redis • OpenRouter AI • Telegram Bots**
